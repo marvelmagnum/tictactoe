@@ -3,10 +3,9 @@ import { useState } from "react";
 export default function Game() {
   const [history, setHistory] = useState([Array(9).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
+  const [isAscending, setIsAscending] = useState(true);
   const xIsNext = currentMove % 2 === 0;
   const currentSquares = history[currentMove];
-  let isAscending = true;
-  let testVal = 1;
 
   function handlePlay(nextSquares) {
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
@@ -16,14 +15,10 @@ export default function Game() {
 
   function jumpTo(nextMove) {
     setCurrentMove(nextMove);
-    console.log(testVal);
   }
 
   function toggleMovesOrder() {
-    isAscending = !isAscending;
-    console.log(isAscending);
-    testVal = 2;
-    console.log(testVal);
+    setIsAscending(!isAscending);
   }
 
   const moves = history.map((squares, move) => {
@@ -49,8 +44,6 @@ export default function Game() {
 
   function moveList() {
     moveList = isAscending ? moves : moves.toReversed();
-    console.log(isAscending);
-    console.log(testVal);
     return moveList;
   }
 
