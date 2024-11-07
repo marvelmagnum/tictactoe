@@ -5,6 +5,8 @@ export default function Game() {
   const [currentMove, setCurrentMove] = useState(0);
   const xIsNext = currentMove % 2 === 0;
   const currentSquares = history[currentMove];
+  let isAscending = true;
+  let testVal = 1;
 
   function handlePlay(nextSquares) {
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
@@ -14,6 +16,14 @@ export default function Game() {
 
   function jumpTo(nextMove) {
     setCurrentMove(nextMove);
+    console.log(testVal);
+  }
+
+  function toggleMovesOrder() {
+    isAscending = !isAscending;
+    console.log(isAscending);
+    testVal = 2;
+    console.log(testVal);
   }
 
   const moves = history.map((squares, move) => {
@@ -23,22 +33,36 @@ export default function Game() {
     } else {
       description = `Go to game start`;
     }
-    return ( 
-      <li key={move}>
-        <button onClick={() => jumpTo(move)}>
-          {description}
-        </button>
+    return (
+      <li key={move}> 
+        {
+          move !== history.length - 1 ? 
+            <button onClick={() => jumpTo(move)}>
+              {description}
+            </button>
+          :
+            <p>{`You are at move #${move +1}`}</p>
+        } 
       </li>
     )
   });
+
+  function moveList() {
+    moveList = isAscending ? moves : moves.toReversed();
+    console.log(isAscending);
+    console.log(testVal);
+    return moveList;
+  }
 
   return (
     <div className="game">
       <div className="game-board">
         <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay}/>
+        <br></br>
+        <button onClick={toggleMovesOrder}>Toggle Order</button>
       </div>
       <div className="game-info">
-        <ol>{moves}</ol>
+        <ol>{moveList()}</ol>
       </div>
     </div>
   );
@@ -62,24 +86,28 @@ function Board({xIsNext, squares, onPlay}) {
     status = 'Next Player: ' + (xIsNext ? 'X' : 'O');
   }
   console.log(winner);
+
+  const grid = () => {
+    const grid = [];
+    for (let i = 0; i < 3; i++) {
+      const cols = [];
+      for (let j = 0; j < 3; j++){
+        cols.push(
+          <Square key={i*3+j} value={squares[i*3+j]} onSquareClick={() => handleClick(i*3+j)}/>
+        );
+      }
+      grid.push(
+        <div key={i} className="board-row">{cols}</div>
+      );
+    }
+    
+    return grid;
+  };
+
   return (
     <>
       <div className="status">{status}</div>
-      <div className="board-row">
-        <Square value={squares[0]} onSquareClick={() => handleClick(0)}/>
-        <Square value={squares[1]} onSquareClick={() => handleClick(1)}/>
-        <Square value={squares[2]} onSquareClick={() => handleClick(2)}/>
-      </div>
-      <div className="board-row">
-        <Square value={squares[3]} onSquareClick={() => handleClick(3)}/>
-        <Square value={squares[4]} onSquareClick={() => handleClick(4)}/>
-        <Square value={squares[5]} onSquareClick={() => handleClick(5)}/>
-      </div>
-      <div className="board-row">
-        <Square value={squares[6]} onSquareClick={() => handleClick(6)}/>
-        <Square value={squares[7]} onSquareClick={() => handleClick(7)}/>
-        <Square value={squares[8]} onSquareClick={() => handleClick(8)}/>
-      </div>
+      {grid()}
     </>
   );
 }
